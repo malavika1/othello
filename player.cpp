@@ -14,12 +14,16 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
+
+    this->side = side;
+    this->board = new Board();
 }
 
 /*
  * Destructor for the player.
  */
 Player::~Player() {
+    delete this->board;
 }
 
 /*
@@ -39,5 +43,46 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */ 
-    return NULL;
+
+    if (this->side == BLACK)
+    {
+        this->board->doMove(opponentsMove, WHITE);
+    }
+    else
+    {
+        this->board->doMove(opponentsMove, BLACK);
+    }
+    
+    int scores[8][8] = {
+        { 3, -3,  2,  2,  2,  2, -3,  3},
+        {-3, -4, -2, -2, -2, -2, -4, -3},
+        { 2, -2,  1,  0,  0,  1, -2,  2},
+        { 2, -2,  0,  1,  1,  0, -2,  2},
+        { 2, -2,  0,  1,  1,  0, -2,  2},
+        { 2, -2,  1,  0,  0,  1, -2,  2},
+        {-3, -4, -2, -2, -2, -2, -4, -3},
+        { 3, -3,  2,  2,  2,  2, -3,  3},
+    };
+
+    int bestScore = -5;
+    Move *bestMove = NULL;
+    for (int i = 0; i < 8; i++) 
+    {
+        for (int j = 0; j < 8; j++) 
+        {
+            Move *move = new Move(i, j);
+
+            if (this->board->checkMove(move, this->side))
+            {
+                if (scores[move->getX()][move->getY()] > bestScore)
+                {
+                    bestScore = scores[move->getX()][move->getY()];
+                    bestMove = move;
+                }
+            }
+        }
+    }
+
+    this->board->doMove(bestMove, this->side);
+    return bestMove;
 }
