@@ -9,14 +9,8 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
-    /* 
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
-
-    this->side = side;
-    this->board = new Board();
+    this->side = side; // Make the side available to the player
+    this->board = new Board(); // Make an empty board to keep track of moves
 }
 
 /*
@@ -39,20 +33,20 @@ Player::~Player() {
  * return NULL.
  */
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    /* 
-     * TODO: Implement how moves your AI should play here. You should first
-     * process the opponent's opponents move before calculating your own move
-     */ 
 
+    // If the player is black
     if (this->side == BLACK)
     {
+        // Record the opponent's move as white
         this->board->doMove(opponentsMove, WHITE);
     }
     else
     {
+        // Else record the opponent's move as black
         this->board->doMove(opponentsMove, BLACK);
     }
     
+    // Scores for each position in the game board
     int scores[8][8] = {
         { 3, -3,  2,  2,  2,  2, -3,  3},
         {-3, -4, -2, -2, -2, -2, -4, -3},
@@ -64,18 +58,26 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         { 3, -3,  2,  2,  2,  2, -3,  3},
     };
 
+    // Initialize the best score and best move
     int bestScore = -5;
     Move *bestMove = NULL;
+
+    // Loop through every move in the game board
     for (int i = 0; i < 8; i++) 
     {
         for (int j = 0; j < 8; j++) 
         {
+            // Store the potentional move
             Move *move = new Move(i, j);
 
+            // Check if the move is valid
             if (this->board->checkMove(move, this->side))
             {
+                // If the score of the potentional move is better than the 
+                // best score
                 if (scores[move->getX()][move->getY()] > bestScore)
                 {
+                    // Set the new best score and best move
                     bestScore = scores[move->getX()][move->getY()];
                     bestMove = move;
                 }
@@ -83,6 +85,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
         }
     }
 
+    // Record the move and return it
     this->board->doMove(bestMove, this->side);
     return bestMove;
 }
